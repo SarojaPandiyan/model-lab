@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+    
+    <script src ="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <body>
+        <div ng-app="myapp">
+        <div ng-controller="myctrl as myctrl">
+            Name:<input type="text" ng-model="myctrl.firstname"><br>
+            Age:<input type="number" ng-model="myctrl.age"><br>
+        {{ firstname  +" "+age }} <br>
+        Filters:<br>
+        {{firstname | uppercase }} <br>   {{firstname | lowercase}} <br>
+        <ul>
+            <li ng-repeat="x in fruits| orderBy:'name'">
+                {{x.name+','+x.price}}
+            </li>
+        </ul>
+       Price for currency filter : {{ money | currency}}<br>
+        Marks:{{Marks()}}
+
+        <ul>
+            <li ng-repeat="x in fruits">
+                {{x.name+','+x.price}}
+            </li>
+        </ul><br>
+        Fruit names with letter 'p'<br>
+        <ul>
+            <li ng-repeat="x in fruits | filter : 'p'">
+                {{x.name}}
+            </li>
+        </ul>
+<!--filter based on user input-->
+<br>Enter the fruit name : <input type ="text" ng-model="test">
+        <ul>
+            <li ng-repeat="x in fruits | filter : test">
+                {{x.name+','+x.price}}
+            </li>
+        </ul><br>
+
+<!--Based on clicking the heading of the table and print by orderBy filter-->
+ <table border="1" width="100%">
+    <tr>
+        <th ng-click="orderByMe('name')">Name</th>
+        <th ng-click="orderByMe('price')">Price</th>
+    </tr>
+    <tr ng-repeat ="x in fruits | orderBy:mywish">
+        <td>{{x.name}}</td>
+        <td>{{x.price}}</td>
+    </tr>
+ </table>
+<br>
+    <!-- Custom filter -->
+     <ul ng-controller="ctrll">
+        <li ng-repeat = "y in books">
+            {{y | myformat}}
+        </li>
+     </ul>
+    </div>
+
+    <!-- Get the list -->
+    <div ng-controller="cart as cart">
+    Enter item name: <input type="text" ng-model="cart.fname">
+    Enter price : <input type="number" ng-model="cart.cost">
+    <button ng-click="cart.add()">Add to Cart</button>
+    </div>
+    <!--Print the list and remove-->
+    <div ng-controller="list as list">
+        <ul>
+            <li ng-repeat = "z in list.items">
+                {{z.fname}} of {{z.cost}}
+            <button ng-click="list.remove($index);">Remove</button>
+            </li>
+        </ul>
+    </div>
+    </div>
+    
+        <script>
+            var app = angular.module('myapp',[]);
+            
+            app.controller('myctrl',function($scope){
+                $scope.firstname="Mahir";
+                $scope.age=25;
+                $scope.money=1000;
+                $scope.Marks=function(){
+                    return $scope.age;
+                }
+
+                $scope.fruits=[
+                {name:'CustardApple',price:'24'},
+                {name:'Bamblimass',price:'500'},
+                {name:'Apple',price:'60'},
+                {name:'Pomegranate',price:'90'}];
+ 
+                $scope.orderByMe=function(x){
+                $scope.mywish = x;
+            }
+            });
+        
+            app.filter('myformat',function(){
+                return function(y){
+                    var i,c,t="";
+                    for(i=0;i<y.length;i++){
+                        c=y[i];
+                        if( i % 2 == 0){
+                            c=c.toUpperCase();
+                        }
+                        t+=c;
+                    }return t;
+                };
+            });
+            app.controller('ctrll',[function($scope){
+                $scope.books=['Thosethreebears','Tempest','Thegreat','Abdul Kalam'];
+            });
+
+            app.service('cartservice',function(){
+                var items=[];
+                this.add=function(fname, cost){
+                items.push({ fname : fname, cost : cost});
+                };
+                this.remove=function(index){
+                    items.splice(index, 1)
+                };
+                this.getitems=function(){
+                    return items;
+                };
+            });
+
+            app.controller('cart',['cartservice',function(cartservice){
+                var cart=this;
+                cart.fname="";
+                cart.cost="";
+                cart.add = function(){
+                    if (cart.fname && cart.cost) {
+                    cartservice.add(cart.fname, cart.cost);
+                    cart.fname = ""; // Clear input fields after adding
+                    cart.cost = "";
+                }
+                };
+            }]);
+
+
+            app.controller('list',['cartservice',function(cartservice){
+                var list=this;
+                list.items=cartservice.getitems();
+                list.remove=function(index){
+                    cartservice.remove(index);
+                };
+        }]);
+         </script>
+    </body>
+ </html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="authApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Signup</title>
+    <style>
+        body {
+            font-family:Arial, sans-serif;
+            background-color:#f0f0f0;
+            margin:0;
+            padding:0;
+        }
+        .container {
+            width:300px;
+            margin:100px auto;
+            padding:20px;
+            background-color:white;
+            border-radius:8px;
+            box-shadow:0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align:center;
+        }
+        .form-group {
+            margin-bottom:15px;
+        }
+        label {
+            display:block;
+            margin-bottom:5px;
+        }
+        input {
+            width:100%;
+            padding:8px;
+            box-sizing:border-box;
+        }
+        button {
+            width:100%;
+            padding:10px;
+            background-color:#28a745;
+            color:white;
+            border:none;
+            border-radius:4px;
+            cursor:pointer;
+        }
+        button:hover {
+            background-color:#218838;
+        }
+        .message {
+            margin-top:15px;
+            color:#ff0000;
+        }
+    </style>
+</head>
+<body ng-controller="AuthController">
+
+<div class="container">
+    <h2>Login</h2>
+    <div class="form-group">
+        <label for="login-email">Email:</label>
+        <input type="email" id="login-email" ng-model="loginData.email" required>
+    </div>
+    <div class="form-group">
+        <label for="login-password">Password:</label>
+        <input type="password" id="login-password" ng-model="loginData.password" required>
+    </div>
+    <button ng-click="login()">Login</button>
+    <div class="message">{{ loginMessage }}</div>
+
+    <h2>Signup</h2>
+    <div class="form-group">
+        <label for="signup-username">Username:</label>
+        <input type="text" id="signup-username" ng-model="signupData.username" required>
+    </div>
+    <div class="form-group">
+        <label for="signup-email">Email:</label>
+        <input type="email" id="signup-email" ng-model="signupData.email" required>
+    </div>
+    <div class="form-group">
+        <label for="signup-password">Password:</label>
+        <input type="password" id="signup-password" ng-model="signupData.password" required>
+    </div>
+    <button ng-click="signup()">Signup</button>
+    <div class="message">{{ signupMessage }}</div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script>
+var app = angular.module('authApp', []);
+
+app.controller('AuthController', ['$scope', 'AuthService', function($scope, AuthService) {
+    $scope.loginData = {};
+    $scope.signupData = {};
+
+    $scope.login = function() {
+        AuthService.login($scope.loginData).then(function(response) {
+            $scope.loginMessage = response.message;
+        }, function(error) {
+            $scope.loginMessage = 'Login failed';
+        });
+    };
+
+    $scope.signup = function() {
+        AuthService.signup($scope.signupData).then(function(response) {
+            $scope.signupMessage = response.message;
+        }, function(error) {
+            $scope.signupMessage = 'Signup failed';
+        });
+    };
+}]);
+
+app.service('AuthService', ['$q', function($q) {
+    var users = [];
+
+    this.login = function(data) {
+        var deferred = $q.defer();
+        var user = users.find(function(user) {
+            return user.email === data.email && user.password === data.password;
+        });
+        if (user) {
+            deferred.resolve({ message: 'Login successful' });
+        } else {
+            deferred.reject({ message: 'Invalid email or password' });
+        }
+        return deferred.promise;
+    };
+
+    this.signup = function(data) {
+        var deferred = $q.defer();
+        var userExists = users.some(function(user) {
+            return user.email === data.email;
+        });
+        if (userExists) {
+            deferred.reject({ message: 'Email already registered' });
+        } else {
+            users.push({ 
+                username: data.username, 
+                email: data.email, 
+                password: data.password 
+            });
+            deferred.resolve({ message: 'User registered successfully' });
+        }
+        return deferred.promise;
+    };
+}]);
+</script>
+
+</body>
+</html>

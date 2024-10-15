@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="bookstore.xsl" type="text/xsl"?>
+<bookstore xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="bookstore.xsd">
+    <book id="b1">
+        <title>Defeat of Insanity</title>
+        <author>writer 1</author>
+        <year>2001</year>
+    </book>
+    <book id="b2">
+        <title>History with Silver</title>
+        <author>Writer 2</author>
+        <year>1998</year>
+        <price>$11</price>
+    </book>
+    <book id="b3">
+        <title>Desendent with Honor</title>
+        <author>writer 3</author>
+        <year>2013</year>
+        <price>$12</price>
+    </book>
+    <book id="b4">
+        <title>Enemies of Dusk</title>
+        <author>writer 4</author>
+        <year>1809</year>
+        <price>$17</price>
+    </book>
+</bookstore>
